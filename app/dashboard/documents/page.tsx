@@ -13,6 +13,7 @@ export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
   useEffect(() => {
     fetchDocuments()
@@ -41,17 +42,24 @@ export default function DocumentsPage() {
       return
     }
 
+    const file = event.target.files[0]
+    setSelectedFile(file)
+  }
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault()
+    if (!selectedFile) return
+
     try {
       setUploading(true)
-      const file = event.target.files[0]
-      const fileExt = file.name.split('.').pop()
+      const fileExt = selectedFile.name.split('.').pop()
       const fileName = `${Math.random()}.${fileExt}`
       const filePath = `${user?.id}/${fileName}`
 
       // Upload file to storage
       const { error: uploadError } = await supabase.storage
         .from('documents')
-        .upload(filePath, file)
+        .upload(filePath, selectedFile)
 
       if (uploadError) throw uploadError
 
@@ -67,26 +75,26 @@ export default function DocumentsPage() {
       // Create document record
       const { error: dbError } = await supabase.from('documents').insert([
         {
-          name: file.name,
+          name: selectedFile.name,
           file_path: filePath,
           file_url: data.publicUrl,
           user_id: user?.id,
           status: 'pending',
-          type: file.type,
-          size: file.size,
+          type: selectedFile.type,
+          size: selectedFile.size,
         },
       ])
 
       if (dbError) throw dbError
 
       toast.success('Document uploaded successfully')
+      setSelectedFile(null)
       fetchDocuments()
     } catch (error) {
       console.error('Error uploading document:', error)
       toast.error('Failed to upload document')
     } finally {
       setUploading(false)
-      event.target.value = ''
     }
   }
 
@@ -94,7 +102,7 @@ export default function DocumentsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Documents</h1>
-        <div>
+        <form onSubmit={handleSubmit}>
           <input
             type="file"
             id="file-upload"
@@ -105,13 +113,24 @@ export default function DocumentsPage() {
           />
           <label htmlFor="file-upload">
             <Button
+              type="button"
               disabled={uploading}
               className="cursor-pointer"
+              onClick={() => document.getElementById('file-upload')?.click()}
+            >
+              Select Document
+            </Button>
+          </label>
+          {selectedFile && (
+            <Button
+              type="submit"
+              disabled={uploading}
+              className="ml-2"
             >
               {uploading ? 'Uploading...' : 'Upload Document'}
             </Button>
-          </label>
-        </div>
+          )}
+        </form>
       </div>
 
       {loading ? (
@@ -152,4 +171,4 @@ export default function DocumentsPage() {
       )}
     </div>
   )
-} 
+}
