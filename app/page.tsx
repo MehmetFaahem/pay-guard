@@ -16,7 +16,7 @@ export default function HomePage() {
             <Link href="/auth/login">
               <Button variant="secondary">Sign in</Button>
             </Link>
-            <Link href="/auth/signup">
+            <Link href="/auth/login">
               <Button>Get Started</Button>
             </Link>
           </nav>
@@ -35,7 +35,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
-            <Link href="/auth/signup">
+            <Link href="/auth/login">
               <Button className="h-12 px-8">Get Started</Button>
             </Link>
             <Link href="/auth/login">
