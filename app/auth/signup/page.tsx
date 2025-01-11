@@ -25,9 +25,9 @@ export default function SignupPage() {
       await signUp(email, password)
       toast.success('Account created successfully!')
       router.push('/dashboard')
-    } catch (error: any) {
+    } catch (error) {
       console.error('Signup error:', error)
-      toast.error(error.message || 'Failed to create account')
+      toast.error(error instanceof Error ? error.message : 'Failed to create account')
     } finally {
       setIsLoading(false)
     }
