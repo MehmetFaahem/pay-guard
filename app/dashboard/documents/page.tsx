@@ -105,7 +105,6 @@ export default function DocumentsPage() {
           />
           <label htmlFor="file-upload">
             <Button
-              as="span"
               disabled={uploading}
               className="cursor-pointer"
             >
