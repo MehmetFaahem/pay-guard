@@ -36,9 +36,9 @@ export default function PaymentsPage() {
       if (error) throw error
       
       setPayments(data || [])
-    } catch (error: any) {
+    } catch (error) {
       console.error('Fetch error:', error)
-      toast.error(error.message || 'Failed to load payments')
+      toast.error(error instanceof Error ? error.message : 'Failed to load payments')
     } finally {
       setLoading(false)
     }
@@ -69,9 +69,9 @@ export default function PaymentsPage() {
       toast.success('Payment created successfully')
       setShowCreateForm(false)
       fetchPayments()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Create error:', error)
-      toast.error(error.message || 'Failed to create payment')
+      toast.error(error instanceof Error ? error.message : 'Failed to create payment')
     } finally {
       setSubmitting(false)
     }
@@ -98,9 +98,9 @@ export default function PaymentsPage() {
       )
       
       toast.success(`Payment ${status} successfully`)
-    } catch (error: any) {
+    } catch (error) {
       console.error('Update error:', error)
-      toast.error(error.message || 'Failed to update payment')
+      toast.error(error instanceof Error ? error.message : 'Failed to update payment')
     }
   }
 
